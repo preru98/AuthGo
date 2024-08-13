@@ -24,7 +24,7 @@ func (uc *UserController) CreateUser(requestbody interface{}) map[string]interfa
 	fmt.Print("<><>", requestbody)
 	// map: key value --> X struct  --> X user struct
 
-	user, ok := requestbody.(UserStructBody)
+	user, ok := requestbody.(*UserStructBody)
 
 	if !ok {
 		fmt.Println("error")
@@ -33,8 +33,8 @@ func (uc *UserController) CreateUser(requestbody interface{}) map[string]interfa
 
 	response := map[string]interface{}{
 		"message": "User created",
-		"user":    user.UserName,
-		"age":     user.Age,
+		"user":    (*user).UserName,
+		"age":     (*user).Age,
 	}
 	return response
 

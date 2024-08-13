@@ -12,11 +12,6 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Key chain service is live")
 }
 
-type UserStructBody struct {
-	UserName string `json:"username" validate:"required"`
-	Age      int    `json:"age" validate:"gte=18,lte=100"`
-}
-
 func main() {
 
 	userService := services.NewUserService()
@@ -26,7 +21,7 @@ func main() {
 	http.HandleFunc("/users", controllers.NewHTTPController(
 		http.MethodPost,
 		userController.CreateUser,
-		UserStructBody{},
+		controllers.UserStructBody{},
 	))
 
 	// Registering the handler for the root URL "/"

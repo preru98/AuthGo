@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"reflect"
 )
 
 func NewHTTPController(httpMethod string, controller func(interface{}) map[string]interface{}, dto interface{}) func(w http.ResponseWriter, r *http.Request) {
@@ -23,18 +24,17 @@ func NewHTTPController(httpMethod string, controller func(interface{}) map[strin
 		}
 
 		// var requestBody map[string]interface{}
-		dto2 := UserStructBody{}
-
-		err = json.Unmarshal(requestBodyBytes, &dto2)
+		dtoValue := reflect.New(reflect.TypeOf(dto)).Interface()
+		err = json.Unmarshal(requestBodyBytes, &dtoValue)
 		if err != nil {
 			http.Error(w, "Invalid request payload", http.StatusBadRequest)
 			return
 		}
-		fmt.Println("DTO", dto2)
+		fmt.Println("DTO", reflect.TypeOf(dtoValue))
 
 		// validate := validator.New()
 
-		response := controller(dto2)
+		response := controller(dtoValue)
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(response)
 	}
