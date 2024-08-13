@@ -17,7 +17,8 @@ func main() {
 	userService := services.NewUserService()
 	userController := controllers.NewUserController(userService)
 
-	http.HandleFunc("/users", userController.CreateUser)
+	// http.HandleFunc("/users", userController.CreateUser)
+	http.HandleFunc("/users", controllers.NewHTTPController(http.MethodPost, userController.CreateUser))
 
 	// Registering the handler for the root URL "/"
 	http.HandleFunc("/", helloHandler)
