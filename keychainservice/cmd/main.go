@@ -6,6 +6,7 @@ import (
 	"keychainservice/services"
 	"log"
 	"net/http"
+	"reflect"
 )
 
 func helloHandler(w http.ResponseWriter, r *http.Request) {
@@ -17,11 +18,20 @@ func main() {
 	userService := services.NewUserService()
 	userController := controllers.NewUserController(userService)
 
+	http.HandleFunc(
+		"/users",
+		controllers.NewHandlerBuilder().
+			AddValidation().
+			AddAuthentication().
+			Build(),
+	)
+
 	// http.HandleFunc("/users", userController.CreateUser)
 	http.HandleFunc("/users", controllers.NewHTTPController(
 		http.MethodPost,
 		userController.CreateUser,
-		controllers.UserStructBody{},
+		reflect.TypeOf(controllers.UserStructBody{}),
+		nil,
 	))
 
 	// Registering the handler for the root URL "/"
@@ -29,7 +39,7 @@ func main() {
 
 	// Starting the server on port 8080
 	fmt.Println("Server is starting on port 8080...")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	if err := http.ListenAndServe(":8081", nil); err != nil {
 		log.Fatalf("Could not start server: %s\n", err)
 	}
 }
